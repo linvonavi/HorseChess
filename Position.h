@@ -23,11 +23,9 @@ public:
 			if (c == '/') {
 				pos = Square(int(pos) - 16);
 				continue;
-			}
-			else if (isdigit(c)) {
+			} else if (isdigit(c)) {
 				pos = Square(int(pos) + c - '0');
-			}
-			else {
+			} else {
 				Piece pc;
 				if (c == 'p') pc = B_PAWN;
 				if (c == 'n') pc = B_KNIGHT;
@@ -49,7 +47,7 @@ public:
 			}
 		}
 		sideToMove = activeColor == "w" ? WHITE : BLACK;
-		enPassantTarget = enPassantTargetSquare == "-" ? 0 :  square_bb(string_to_square(enPassantTargetSquare));
+		enPassantTarget = enPassantTargetSquare == "-" ? 0 : square_bb(string_to_square(enPassantTargetSquare));
 	}
 
 	string get_fen() {
@@ -80,18 +78,34 @@ public:
 	}
 
 	inline void move_piece(Square from, Square to) {
-		Piece pc = board[from];
-		Bitboard fromTo = from | to;
-		byType[ALL_PIECES] ^= fromTo;
-		byType[type_of(pc)] ^= fromTo;
-		byColor[color_of(pc)] ^= fromTo;
+		Piece from_pc = board[from];
+		Piece to_pc = board[to];
+		Bitboard from_bb = square_bb(from);
+		Bitboard to_bb = square_bb(to);
+		byType[ALL_PIECES] &= ~from_bb;
+		byType[type_of(from_pc)] &= ~from_bb;
+		byColor[color_of(from_pc)] &= ~from_bb;
+		byType[ALL_PIECES] &= ~to_bb;
+		byType[type_of(to_pc)] &= ~to_bb;
+		byColor[color_of(to_pc)] &= ~to_bb;
+		byType[ALL_PIECES] |= to_bb;
+		byType[type_of(to_pc)] |= to_bb;
+		byColor[color_of(to_pc)] |= to_bb;
 		board[from] = NO_PIECE;
-		board[to] = pc;
+		board[to] = from_pc;
 	}
 
 	inline void make_move(Move move) {
 		move_piece(move.from, move.to);
 		sideToMove = Color(!sideToMove);
+		if (move.info == 1) {
+			Square opp_sq = sideToMove == WHITE ? shift_down(move.to) : shift_up(move.to);
+			Bitboard opp = square_bb(opp_sq);
+			byType[ALL_PIECES] ^= opp;
+			byType[type_of(board[opp_sq])] ^= opp;
+			byColor[type_of(board[opp_sq])] ^= opp;
+			board[opp_sq] = NO_PIECE;
+		}
 	}
 
 	bool is_legal(Move move) {
