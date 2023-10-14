@@ -49,7 +49,7 @@ public:
 			}
 		}
 		sideToMove = activeColor == "w" ? WHITE : BLACK;
-		enPassantTarget = square_bb(string_to_square(enPassantTargetSquare));
+		enPassantTarget = enPassantTargetSquare == "-" ? 0 :  square_bb(string_to_square(enPassantTargetSquare));
 	}
 
 	string get_fen() {

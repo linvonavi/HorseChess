@@ -4,28 +4,28 @@
 int main() {
 	init_bitboards();
 	Position pos;
-	pos.set(Start_FEN);
-	//pos.move_piece(SQ_B2, SQ_B4);
-	print(pos);
-	cout << endl;
-	print(PseudoAttacks[ROOK][SQ_H1]);
-	print(pseudolegal_bishop(pos.byType[ALL_PIECES], SQ_D1));
-	MoveList moves;
-	legal_moves(pos, moves);
-	cout << moves.size << '\n';
 
-	int time = clock();
-	int ans = 0;
-for (int i = 0; i < 2e7; i++) {
-	moves.size = 0;
-	if (rnd() % 2) {
-		pos.byColor[WHITE] ^= square_bb(SQ_B4);
+	string type;
+	while (cin >> type) {
+		if (type == "set") {
+			string fen = "";
+			string s;
+			for (int i = 0; i < 6; i++) {
+				cin >> s;
+				fen += s + " ";
+			}
+			pos.set(fen);
+		}
+		if (type == "get_moves") {
+			MoveList moves;
+			legal_moves(pos, moves);
+			cout << moves.size << ' ';
+			for (int i = 0; i < moves.size; i++) {
+				cout << square_to_string(moves.moves[i].from) << square_to_string(moves.moves[i].to) << ' ';
+			}
+			cout << endl;
+		}
 	}
-		legal_moves(pos, moves);
-		ans += moves.size;
-	}
-	cout << float(clock() - time) / CLOCKS_PER_SEC << endl;
-cout << ans << endl;
 
 
 	return 0;
