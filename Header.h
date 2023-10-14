@@ -77,4 +77,4 @@ cout << '\n';
 
 inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | square_bb(s2); }
 
-const string Start_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
+const string Start_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - - -";
