@@ -1,5 +1,5 @@
 # HorseChess
-* set position:
+* set board:
   ```set_position <fen>```
 * get possible moves:
 ```get_moves```
