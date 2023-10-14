@@ -50,6 +50,7 @@ inline Square string_to_square(string s) {
 	return Square((s[0] - 'a') + 8 * (s[1] - '1'));
 }
 
+
 inline string square_to_string(Square s) {
 	return string(1, 'a' + int(s) % 8) + string(1, '1' + int(s) / 8);
 }
@@ -77,4 +78,4 @@ cout << '\n';
 
 inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | square_bb(s2); }
 
-const string Start_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - - -";
+const string StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - - -";

@@ -12,6 +12,10 @@ int main() {
 			string s;
 			for (int i = 0; i < 6; i++) {
 				cin >> s;
+				if (s == "start") {
+					fen = StartFEN;
+					break;
+				}
 				fen += s + " ";
 			}
 			pos.set(fen);
@@ -42,6 +46,12 @@ int main() {
 				}
 			}
 			cout << endl;
+		}
+		if (type == "make_move") {
+			string move;
+			cin >> move;
+			Move m = string_to_move(move);
+			pos.make_move(m);
 		}
 	}
 

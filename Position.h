@@ -89,6 +89,11 @@ public:
 		board[to] = pc;
 	}
 
+	inline void make_move(Move move) {
+		move_piece(move.from, move.to);
+		sideToMove = Color(!sideToMove);
+	}
+
 	bool is_legal(Move move) {
 		return 1;
 	}

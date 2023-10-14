@@ -16,6 +16,10 @@ struct Move {
 	}
 };
 
+inline Move string_to_move(string s) {
+	return Move(string_to_square(s.substr(0, 2)), string_to_square(s.substr(2, 2)));
+}
+
 struct MoveList {
 	Move moves[MAX_MOVES];
 	size_t size = 0;
