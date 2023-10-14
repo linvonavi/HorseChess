@@ -105,6 +105,13 @@ public:
 			byType[type_of(board[opp_sq])] ^= opp;
 			byColor[type_of(board[opp_sq])] ^= opp;
 			board[opp_sq] = NO_PIECE;
+			return;
+		}
+		if (move.info < PIECE_CNT) {
+			byType[type_of(board[move.to])] ^= square_bb(move.to);
+			board[move.to] = Piece(move.info);
+			byType[type_of(board[move.to])] ^= square_bb(move.to);
+			return;
 		}
 	}
 

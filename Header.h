@@ -14,6 +14,7 @@ enum Piece {
 	PIECE_CNT = 16
 };
 
+
 char PieceNames[] = ".PNBRQK..pnbrqk";
 
 enum Color {
@@ -25,6 +26,10 @@ enum Type {
 	ALL_PIECES = 0,
 	TYPE_CNT = 7
 };
+
+Piece make_piece(Type t, Color c) {
+	return Piece(t + 8 * c);
+}
 
 inline Type type_of(Piece pc) {
 	return Type(pc & 7);

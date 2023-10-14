@@ -32,6 +32,8 @@ const Bitboard MaskUp = 0xff00000000000000;
 const Bitboard MaskDown = 0x00000000000000ff;
 const Bitboard MaskPawns = 0x00ff00000000ff00;
 
+const Bitboard PawnPromotionMask[COLOR_CNT] = { MaskUp, MaskDown };
+
 const Bitboard MaskCenter = 0x007e7e7e7e7e7e00;
 
 inline Bitboard shift_up(Bitboard bb) {
