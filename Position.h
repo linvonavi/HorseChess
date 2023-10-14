@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Header.h"
+#include "Bitboards.h"
 
 class Position {
 private:
+public:
 	Piece board[SQUARE_CNT];
 	Bitboard byType[TYPE_CNT];
 	Bitboard byColor[COLOR_CNT];
+	Bitboard enPassantTarget = 0;
 	Color sideToMove;
-public:
+
 	void set(string fen) {
 		memset(board, 0, sizeof(board));
 		memset(byType, 0, sizeof(byType));
@@ -19,6 +21,7 @@ public:
 		Square pos = SQ_A8;
 		for (char c : piecePlacement) {
 			if (c == '/') {
+				pos = Square(int(pos) - 16);
 				continue;
 			}
 			else if (isdigit(c)) {
@@ -46,6 +49,7 @@ public:
 			}
 		}
 		sideToMove = activeColor == "w" ? WHITE : BLACK;
+		enPassantTarget = square_bb(string_to_square(enPassantTargetSquare));
 	}
 
 	string get_fen() {
@@ -56,7 +60,7 @@ public:
 				fen += '/';
 			}
 			if (board[pos] != NO_PIECE) {
-				fen += Piece_names[board[pos]];
+				fen += PieceNames[board[pos]];
 			} else {
 				if (isdigit(fen.back())) {
 					fen.back()++;
@@ -85,5 +89,13 @@ public:
 		board[to] = pc;
 	}
 
+	bool is_legal(Move move) {
+		return 1;
+	}
 
 };
+
+
+void print(Position pos) {
+	print(pos.byType[ALL_PIECES]);
+}

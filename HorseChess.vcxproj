@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="Bitboards.h" />
     <ClInclude Include="Header.h" />
+    <ClInclude Include="Movegen.h" />
     <ClInclude Include="Moves.h" />
     <ClInclude Include="Position.h" />
   </ItemGroup>

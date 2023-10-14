@@ -14,7 +14,7 @@ enum Piece {
 	PIECE_CNT = 16
 };
 
-char Piece_names[] = ".PNBRQK..pnbrqk";
+char PieceNames[] = ".PNBRQK..pnbrqk";
 
 enum Color {
 	WHITE, BLACK, COLOR_CNT
@@ -46,7 +46,19 @@ enum Square : int {
 	SQUARE_CNT
 };
 
+inline Square string_to_square(string s) {
+	return Square((s[0] - 'a') + 8 * (s[1] - '1'));
+}
+
+inline string square_to_string(Square s) {
+	return string(1, 'a' + int(s) % 8) + string(1, '1' + int(s) / 8);
+}
+
 using Bitboard = uint64_t;
+
+inline Square get_square(Bitboard bb) {
+	return Square(63 - __lzcnt64(bb));
+}
 
 inline Bitboard square_bb(Square s) {
 	return Bitboard(1) << s;
@@ -58,7 +70,10 @@ inline void print(Bitboard bb) {
 		cout << ((bb >> s) & 1) << ' ';
 		if (s % 8 == 7) cout << '\n';
 	}
+cout << '\n';
 }
+
+
 
 inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | square_bb(s2); }
 

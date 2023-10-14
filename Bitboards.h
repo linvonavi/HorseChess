@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Header.h"
+#include "Moves.h"
 
 Bitboard PseudoAttacks[TYPE_CNT][SQUARE_CNT];
 Bitboard PawnAttacks[COLOR_CNT][SQUARE_CNT];
@@ -30,6 +30,7 @@ const Bitboard MaskLeft = 0x0101010101010101;
 const Bitboard MaskRight = 0x8080808080808080;
 const Bitboard MaskUp = 0xff00000000000000;
 const Bitboard MaskDown = 0x00000000000000ff;
+const Bitboard MaskPawns = 0x00ff00000000ff00;
 
 const Bitboard MaskCenter = 0x007e7e7e7e7e7e00;
 
@@ -163,8 +164,8 @@ void init_bitboards() {
 		int cnt = 0;
 		Square s1 = s;
 		while (bb = shift_up(shift_left(bb))) {
-			PseudoAttacks[BISHOP][s] |= bb;
 			if (bb & ~MaskLeft & ~MaskUp) {
+				PseudoAttacks[BISHOP][s] |= bb;
 				s1 = shift_up(shift_left(s1));
 				blockers[cnt++] = s1;
 			}
@@ -172,8 +173,8 @@ void init_bitboards() {
 		s1 = s;
 		bb = square_bb(s);
 		while (bb = shift_up(shift_right(bb))) {
-			PseudoAttacks[BISHOP][s] |= bb;
 			if (bb & ~MaskRight & ~MaskUp) {
+				PseudoAttacks[BISHOP][s] |= bb;
 				s1 = shift_up(shift_right(s1));
 				blockers[cnt++] = s1;
 			}
@@ -181,8 +182,8 @@ void init_bitboards() {
 		s1 = s;
 		bb = square_bb(s);
 		while (bb = shift_down(shift_left(bb))) {
-			PseudoAttacks[BISHOP][s] |= bb;
 			if (bb & ~MaskLeft & ~MaskDown) {
+				PseudoAttacks[BISHOP][s] |= bb;
 				s1 = shift_down(shift_left(s1));
 				blockers[cnt++] = s1;
 			}
@@ -190,8 +191,8 @@ void init_bitboards() {
 		s1 = s;
 		bb = square_bb(s);
 		while (bb = shift_down(shift_right(bb))) {
-			PseudoAttacks[BISHOP][s] |= bb;
 			if (bb & ~MaskRight & ~MaskDown) {
+				PseudoAttacks[BISHOP][s] |= bb;
 				s1 = shift_down(shift_right(s1));
 				blockers[cnt++] = s1;
 			}
@@ -238,8 +239,8 @@ void init_bitboards() {
 		int cnt = 0;
 		Square s1 = s;
 		while (bb = shift_left(bb)) {
-			PseudoAttacks[ROOK][s] |= bb;
 			if (bb & ~MaskLeft) {
+				PseudoAttacks[ROOK][s] |= bb;
 				s1 = shift_left(s1);
 				blockers[cnt++] = s1;
 			}
@@ -247,8 +248,8 @@ void init_bitboards() {
 		s1 = s;
 		bb = square_bb(s);
 		while (bb = shift_right(bb)) {
-			PseudoAttacks[ROOK][s] |= bb;
 			if (bb & ~MaskRight) {
+				PseudoAttacks[ROOK][s] |= bb;
 				s1 = shift_right(s1);
 				blockers[cnt++] = s1;
 			}
@@ -256,8 +257,8 @@ void init_bitboards() {
 		s1 = s;
 		bb = square_bb(s);
 		while (bb = shift_down(bb)) {
-			PseudoAttacks[ROOK][s] |= bb;
 			if (bb & ~MaskDown) {
+				PseudoAttacks[ROOK][s] |= bb;
 				s1 = shift_down(s1);
 				blockers[cnt++] = s1;
 			}
@@ -265,8 +266,8 @@ void init_bitboards() {
 		s1 = s;
 		bb = square_bb(s);
 		while (bb = shift_up(bb)) {
-			PseudoAttacks[ROOK][s] |= bb;
 			if (bb & ~MaskUp) {
+				PseudoAttacks[ROOK][s] |= bb;
 				s1 = shift_up(s1);
 				blockers[cnt++] = s1;
 			}
