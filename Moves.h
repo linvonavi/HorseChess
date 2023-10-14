@@ -4,6 +4,9 @@
 
 const int MAX_MOVES = 256;
 
+const int PawnPromotionId = 19;
+const int CastlingK = 20, CastlingQ = 21, Castlingk = 22, Castlingq = 23;
+
 struct Move {
 	Square from, to;
 	int info = 0; // 1 - en passant

@@ -4,6 +4,7 @@
 
 Bitboard PseudoAttacks[TYPE_CNT][SQUARE_CNT];
 Bitboard PawnAttacks[COLOR_CNT][SQUARE_CNT];
+Bitboard AttackersPawn[COLOR_CNT][SQUARE_CNT];
 const int MaxRookBlockersCnt = 12;
 const int MaxRookMagicSize = 13;
 const int MagicRookShift[SQUARE_CNT] = {
@@ -147,6 +148,8 @@ void init_bitboards() {
 	for (Square s = SQ_A1; s < SQUARE_CNT; s = Square(int(s) + 1)) {
 		PawnAttacks[WHITE][s] = shift_left(shift_up(square_bb(s))) | shift_right(shift_up(square_bb(s)));
 		PawnAttacks[BLACK][s] = shift_left(shift_down(square_bb(s))) | shift_right(shift_down(square_bb(s)));
+		AttackersPawn[BLACK][s] = shift_left(shift_up(square_bb(s))) | shift_right(shift_up(square_bb(s)));
+		AttackersPawn[WHITE][s] = shift_left(shift_down(square_bb(s))) | shift_right(shift_down(square_bb(s)));
 	}
 	// init knights
 	for (Square s = SQ_A1; s < SQUARE_CNT; s = Square(int(s) + 1)) {
