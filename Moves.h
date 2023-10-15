@@ -5,11 +5,12 @@
 const int MAX_MOVES = 256;
 
 const int PawnPromotionId = 19;
+const int EnPassantId = 1;
 const int CastlingK = 20, CastlingQ = 21, Castlingk = 22, Castlingq = 23;
 
 struct Move {
 	Square from, to;
-	int info = 0; // 1 - en passant
+	int info = 0;
 	Move() : from(SQ_A1), to(SQ_A1) {}
 
 	Move(Square from, Square to, int info = 0) : from(from), to(to), info(info) {};

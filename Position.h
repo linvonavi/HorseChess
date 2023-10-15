@@ -131,7 +131,7 @@ public:
 			if (move.info == PawnPromotionId) {
 				enPassantTarget = square_bb(sideToMove == WHITE ? shift_up(move.to) : shift_down(move.to));
 			}
-			if (move.info == 1) {
+			if (move.info == EnPassantId) {
 				Square opp_sq = sideToMove == WHITE ? shift_down(move.to) : shift_up(move.to);
 				Bitboard opp = square_bb(opp_sq);
 				byType[ALL_PIECES] ^= opp;

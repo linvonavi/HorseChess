@@ -33,7 +33,7 @@ void legal_moves(Position& pos, MoveList& moves) {
 		}
 		// en passant
 		if (PawnAttacks[pos.sideToMove][from] & pos.enPassantTarget && pos.is_legal(Move(from, get_square(pos.enPassantTarget)))) {
-			moves.add(Move(from, get_square(pos.enPassantTarget), 1));
+			moves.add(Move(from, get_square(pos.enPassantTarget), EnPassantId));
 		}
 		pawns ^= square_bb(from);
 	}
