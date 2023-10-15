@@ -9,3 +9,5 @@ example: ```get_moves_from_position a2```
 * make move
 ```make_move <move>```
 example: ```make_move a2a4```
+* turn on/off debug
+```debug```
