@@ -55,7 +55,9 @@ sett = ""
 sr=0
 sc = 0
 att = []
+fps = 10
 
+clock = pygame.time.Clock()
 # Главный цикл игры
 running = True
 while running:
@@ -103,6 +105,7 @@ while running:
                 window.blit(text, (col * 100 + 15, row * 100 + 15))
 
     pygame.display.flip()
+    clock.tick(fps)
 
 # Закрываем процесс после завершения работы
 process.stdin.close()
