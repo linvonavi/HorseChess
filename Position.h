@@ -91,7 +91,7 @@ public:
 		return fen;
 	}
 
-	inline void move_piece(Square from, Square to) {
+	void move_piece(Square from, Square to) {
 		Piece from_pc = board[from];
 		Piece to_pc = board[to];
 		Bitboard from_bb = square_bb(from);
@@ -103,13 +103,13 @@ public:
 		byType[type_of(to_pc)] &= ~to_bb;
 		byColor[color_of(to_pc)] &= ~to_bb;
 		byType[ALL_PIECES] |= to_bb;
-		byType[type_of(to_pc)] |= to_bb;
-		byColor[color_of(to_pc)] |= to_bb;
+		byType[type_of(from_pc)] |= to_bb;
+		byColor[color_of(from_pc)] |= to_bb;
 		board[from] = NO_PIECE;
 		board[to] = from_pc;
 	}
 
-	inline void make_move(Move move) {
+	void make_move(Move move) {
 		if (board[move.from] == W_KING) {
 			castlingK = castlingQ = 0;
 		}
@@ -125,7 +125,8 @@ public:
 			if (move.from == SQ_H8) castlingk = 0;
 		}
 		move_piece(move.from, move.to);
-		sideToMove = Color(!sideToMove);
+		sideToMove = sideToMove == WHITE ? BLACK : WHITE;
+		enPassantTarget = 0;
 		if (move.info) {
 			if (move.info == PawnPromotionId) {
 				enPassantTarget = square_bb(sideToMove == WHITE ? shift_up(move.to) : shift_down(move.to));
@@ -180,7 +181,7 @@ public:
 		}
 	}
 
-	bool is_attacked_square(Square s) {
+	inline bool is_attacked_square(Square s) {
 		if (AttackersPawn[!sideToMove][s] & byType[PAWN] & byColor[!sideToMove]) return 1;
 		if (PseudoAttacks[KNIGHT][s] & byType[KNIGHT] & byColor[!sideToMove]) return 1;
 		if (PseudoAttacks[KING][s] & byType[KING] & byColor[!sideToMove]) return 1;
@@ -200,12 +201,13 @@ public:
 		return attacks & square_bb(s);
 	}
 
-	bool is_legal(Move move) {
+	inline bool is_legal(Move move) {
 		Bitboard BCNSTM = byColor[!sideToMove];
 		Bitboard BTAP = byType[ALL_PIECES];
 		byColor[!sideToMove] &= ~square_bb(move.to);
 		byType[ALL_PIECES] &= ~square_bb(move.from);
-		bool ans = !is_attacked_square(get_square(byType[KING] & byColor[sideToMove]));
+		byType[ALL_PIECES] |= square_bb(move.to);
+		bool ans = !is_attacked_square(type_of(board[move.from]) != KING ? get_square(byType[KING] & byColor[sideToMove]) : move.to);
 		byColor[!sideToMove] = BCNSTM;
 		byType[ALL_PIECES] = BTAP;
 		return ans;
@@ -215,5 +217,8 @@ public:
 
 
 void print(Position pos) {
-	print(pos.byType[ALL_PIECES]);
+	for (Square s = SQ_A8; s >= 0; s = Square(int(s) + 1 - 16 * ((s + 1) % 8 == 0))) {
+		cout << PieceNames[pos.board[s]] << ' ';
+		if (s % 8 == 7) cout << '\n';
+	}
 }

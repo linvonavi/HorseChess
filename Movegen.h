@@ -27,12 +27,12 @@ void legal_moves(Position& pos, MoveList& moves) {
 			to ^= square_bb(to_sq);
 		}
 		// double pawn push
-		to |= (pos.sideToMove == WHITE ? shift_up(shift_up(square_bb(from) & MaskPawns)) : shift_down(shift_down(square_bb(from) & MaskPawns))) & mask_free;
-		if (to) {
+		to |= (pos.sideToMove == WHITE ? shift_up(shift_up(square_bb(from) & MaskPawns) & mask_free) : shift_down(shift_down(square_bb(from) & MaskPawns) & mask_free)) & mask_free;
+		if (to && pos.is_legal(Move(from, get_square(to)))) {
 			moves.add(Move(from, get_square(to), PawnPromotionId));
 		}
 		// en passant
-		if (PawnAttacks[pos.sideToMove][from] & pos.enPassantTarget) {
+		if (PawnAttacks[pos.sideToMove][from] & pos.enPassantTarget && pos.is_legal(Move(from, get_square(pos.enPassantTarget)))) {
 			moves.add(Move(from, get_square(pos.enPassantTarget), 1));
 		}
 		pawns ^= square_bb(from);
