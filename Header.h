@@ -8,6 +8,8 @@ using namespace std;
 mt19937 rnd(0);
 mt19937_64 rnd64(0);
 
+bool Debug = false;
+
 enum Piece {
 	NO_PIECE,
 	W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
@@ -77,7 +79,7 @@ inline void print(Bitboard bb) {
 		cout << ((bb >> s) & 1) << ' ';
 		if (s % 8 == 7) cout << '\n';
 	}
-cout << '\n';
+	cout << '\n';
 }
 
 

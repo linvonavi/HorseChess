@@ -19,18 +19,24 @@ void rec(Position pos, int depth) {
 	}
 }
 
+void test(Position pos, int d) {
+	int time = clock();
+	rec(pos, d);
+	cout << sum << endl;
+	cout << float(clock() - time) / CLOCKS_PER_SEC << endl;
+}
+
 int main() {
-	//freopen("out.txt", "w", stdout);
 	init_bitboards();
 	Position pos;
-	pos.set(StartFEN);/*
-	int time = clock();
-		rec(pos, 6);
-	cout << sum << endl;
-	cout << float(clock() - time) / CLOCKS_PER_SEC << endl;*/
-	//return 0;
+	pos.set(StartFEN);
+	//test(pos, 6);
+
 	string type;
 	while (cin >> type) {
+		if (type == "debug") {
+			Debug = !Debug;
+		}
 		if (type == "set_position") {
 			string fen = "";
 			string s;
@@ -43,7 +49,9 @@ int main() {
 				fen += s + " ";
 			}
 			pos.set(fen);
-			//print(pos);
+			if (Debug) {
+				print(pos);
+			}
 		}
 		if (type == "get_moves") {
 			MoveList moves;
@@ -77,7 +85,9 @@ int main() {
 			cin >> move;
 			Move m = string_to_move(move);
 			pos.make_move(m);
-			//print(pos);
+			if (Debug) {
+				print(pos);
+			}
 		}
 	}
 

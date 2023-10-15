@@ -221,4 +221,5 @@ void print(Position pos) {
 		cout << PieceNames[pos.board[s]] << ' ';
 		if (s % 8 == 7) cout << '\n';
 	}
+	cout << '\n';
 }
