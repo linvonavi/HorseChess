@@ -9,7 +9,7 @@ public:
 	Bitboard byType[TYPE_CNT];
 	Bitboard byColor[COLOR_CNT];
 	Bitboard enPassantTarget = 0;
-	bool castlingK, castlingQ, castlingk, castlingq;
+	bool castlingK = 0, castlingQ = 0, castlingk = 0, castlingq = 0;
 
 	Color sideToMove;
 

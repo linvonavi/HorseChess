@@ -3,8 +3,7 @@
 
 long long sum = 0;
 
-
-void rec(Position pos, int depth) {
+void rec(Position&pos, int depth) {
 	//print(pos);
 	MoveList moves;
 	legal_moves(pos, moves);
@@ -30,7 +29,11 @@ int main() {
 	init_bitboards();
 	Position pos;
 	pos.set(StartFEN);
-	//test(pos, 6);
+	/*for (int i = 1; i <=7; i++) {
+		cout << i << endl;
+		test(pos, i);
+		cout << endl;
+	}*/
 
 	string type;
 	while (cin >> type) {

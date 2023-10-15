@@ -15,13 +15,14 @@ void legal_moves(Position& pos, MoveList& moves) {
 		while (to) {
 			Square to_sq = get_square(to);
 			if (pos.is_legal(Move(from, to_sq))) {
-				moves.add(Move(from, to_sq));
 				// promotion
 				if (square_bb(to_sq) & PawnPromotionMask[pos.sideToMove]) {
 					moves.add(Move(from, to_sq, make_piece(QUEEN, pos.sideToMove)));
 					moves.add(Move(from, to_sq, make_piece(ROOK, pos.sideToMove)));
 					moves.add(Move(from, to_sq, make_piece(BISHOP, pos.sideToMove)));
 					moves.add(Move(from, to_sq, make_piece(KNIGHT, pos.sideToMove)));
+				} else {
+					moves.add(Move(from, to_sq));
 				}
 			}
 			to ^= square_bb(to_sq);
