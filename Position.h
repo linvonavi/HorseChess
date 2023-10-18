@@ -74,7 +74,7 @@ public:
 			}
 			pos = Square(int(pos) + 1);
 			if (pos % 8 == 0) {
-				if (pos == SQ_B1) {
+				if (pos == SQ_A2) {
 					break;
 				}
 				fen += '/';

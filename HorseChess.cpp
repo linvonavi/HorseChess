@@ -70,6 +70,9 @@ int main() {
 				print(pos);
 			}
 		}
+		if (type == "get_fen") {
+			cout << pos.get_fen() << endl;
+		}
 	}
 
 
