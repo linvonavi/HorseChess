@@ -2,6 +2,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <bits/stdc++.h>
+#include <thread>
+#include <future>
 #include <random>
 using namespace std;
 
@@ -10,7 +12,7 @@ mt19937_64 rnd64(0);
 
 bool Debug = false;
 
-enum Piece {
+enum Piece : char {
 	NO_PIECE,
 	W_PAWN, W_KNIGHT, W_BISHOP, W_ROOK, W_QUEEN, W_KING,
 	B_PAWN = W_PAWN + 8, B_KNIGHT, B_BISHOP, B_ROOK, B_QUEEN, B_KING,
@@ -23,6 +25,10 @@ char PieceNames[] = ".PNBRQK..pnbrqk";
 enum Color {
 	WHITE, BLACK, COLOR_CNT
 };
+
+Color another_color(Color c) {
+	return c == WHITE ? BLACK : WHITE;
+}
 
 enum Type {
 	NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING,

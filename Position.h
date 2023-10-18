@@ -17,6 +17,7 @@ public:
 		memset(board, 0, sizeof(board));
 		memset(byType, 0, sizeof(byType));
 		memset(byColor, 0, sizeof(byColor));
+		castlingK = 0; castlingQ = 0; castlingk = 0; castlingq = 0;
 		stringstream ss(fen);
 		string piecePlacement, activeColor, castlingRights, enPassantTargetSquare, halfMoveClock, fullMoveNumber;
 		ss >> piecePlacement >> activeColor >> castlingRights >> enPassantTargetSquare >> halfMoveClock >> fullMoveNumber;
@@ -62,19 +63,23 @@ public:
 		string fen = "";
 		Square pos = SQ_A8;
 		while (pos != SQUARE_CNT) {
-			if (pos % 8 == 0 && pos != SQ_A8) {
-				fen += '/';
-			}
 			if (board[pos] != NO_PIECE) {
 				fen += PieceNames[board[pos]];
 			} else {
-				if (isdigit(fen.back())) {
+				if (fen.size() && isdigit(fen.back())) {
 					fen.back()++;
 				} else {
 					fen += '1';
 				}
 			}
 			pos = Square(int(pos) + 1);
+			if (pos % 8 == 0) {
+				if (pos == SQ_B1) {
+					break;
+				}
+				fen += '/';
+				pos = Square(int(pos) - 16);
+			}
 		}
 		fen += ' ';
 		fen += sideToMove == WHITE ? 'w' : 'b';
@@ -110,33 +115,44 @@ public:
 	}
 
 	void make_move(Move move) {
-		if (board[move.from] == W_KING) {
-			castlingK = castlingQ = 0;
-		}
-		if (board[move.from] == B_KING) {
-			castlingk = castlingq = 0;
-		}
-		if (board[move.from] == W_ROOK) {
-			if (move.from == SQ_A1) castlingQ = 0;
-			if (move.from == SQ_H1) castlingK = 0;
-		}
-		if (board[move.from] == B_ROOK) {
-			if (move.from == SQ_A8) castlingq = 0;
-			if (move.from == SQ_H8) castlingk = 0;
+		if (sideToMove == WHITE) {
+			if (board[move.from] == W_KING) {
+				castlingK = castlingQ = 0;
+			}
+			if (board[move.from] == W_ROOK) {
+				if (move.from == SQ_A1) castlingQ = 0;
+				if (move.from == SQ_H1) castlingK = 0;
+			}
+			if (board[move.to] == B_ROOK) {
+				if (move.to == SQ_A8) castlingq = 0;
+				if (move.to == SQ_H8) castlingk = 0;
+			}
+		} else {
+			if (board[move.from] == B_KING) {
+				castlingk = castlingq = 0;
+			}
+			if (board[move.from] == B_ROOK) {
+				if (move.from == SQ_A8) castlingq = 0;
+				if (move.from == SQ_H8) castlingk = 0;
+			}
+			if (board[move.to] == W_ROOK) {
+				if (move.to == SQ_A1) castlingQ = 0;
+				if (move.to == SQ_H1) castlingK = 0;
+			}
 		}
 		move_piece(move.from, move.to);
-		sideToMove = sideToMove == WHITE ? BLACK : WHITE;
 		enPassantTarget = 0;
+		sideToMove = sideToMove == WHITE ? BLACK : WHITE;
 		if (move.info) {
 			if (move.info == PawnPromotionId) {
 				enPassantTarget = square_bb(sideToMove == WHITE ? shift_up(move.to) : shift_down(move.to));
 			}
 			if (move.info == EnPassantId) {
-				Square opp_sq = sideToMove == WHITE ? shift_down(move.to) : shift_up(move.to);
+				Square opp_sq = sideToMove == BLACK ? shift_down(move.to) : shift_up(move.to);
 				Bitboard opp = square_bb(opp_sq);
 				byType[ALL_PIECES] ^= opp;
 				byType[type_of(board[opp_sq])] ^= opp;
-				byColor[type_of(board[opp_sq])] ^= opp;
+				byColor[color_of(board[opp_sq])] ^= opp;
 				board[opp_sq] = NO_PIECE;
 				return;
 			}
@@ -147,33 +163,33 @@ public:
 				return;
 			}
 			if (move.info == CastlingK) {
-				byType[ALL_PIECES] ^= (square_bb(SQ_F1) & square_bb(SQ_H1));
-				byType[ROOK] ^= (square_bb(SQ_H1) & square_bb(SQ_F1));
-				byColor[WHITE] ^= (square_bb(SQ_F1) & square_bb(SQ_H1));
+				byType[ALL_PIECES] ^= (square_bb(SQ_F1) | square_bb(SQ_H1));
+				byType[ROOK] ^= (square_bb(SQ_H1) | square_bb(SQ_F1));
+				byColor[WHITE] ^= (square_bb(SQ_F1) | square_bb(SQ_H1));
 				board[SQ_H1] = NO_PIECE;
 				board[SQ_F1] = W_ROOK;
 				castlingK = castlingQ = 0;
 			}
 			if (move.info == CastlingQ) {
-				byType[ALL_PIECES] ^= (square_bb(SQ_D1) & square_bb(SQ_A1));
-				byType[ROOK] ^= (square_bb(SQ_A1) & square_bb(SQ_D1));
-				byColor[WHITE] ^= (square_bb(SQ_D1) & square_bb(SQ_A1));
+				byType[ALL_PIECES] ^= (square_bb(SQ_D1) | square_bb(SQ_A1));
+				byType[ROOK] ^= (square_bb(SQ_A1) | square_bb(SQ_D1));
+				byColor[WHITE] ^= (square_bb(SQ_D1) | square_bb(SQ_A1));
 				board[SQ_A1] = NO_PIECE;
 				board[SQ_D1] = W_ROOK;
 				castlingK = castlingQ = 0;
 			}
 			if (move.info == Castlingk) {
-				byType[ALL_PIECES] ^= (square_bb(SQ_F8) & square_bb(SQ_H8));
-				byType[ROOK] ^= (square_bb(SQ_H8) & square_bb(SQ_F8));
-				byColor[BLACK] ^= (square_bb(SQ_F8) & square_bb(SQ_H8));
+				byType[ALL_PIECES] ^= (square_bb(SQ_F8) | square_bb(SQ_H8));
+				byType[ROOK] ^= (square_bb(SQ_H8) | square_bb(SQ_F8));
+				byColor[BLACK] ^= (square_bb(SQ_F8) | square_bb(SQ_H8));
 				board[SQ_H8] = NO_PIECE;
 				board[SQ_F8] = B_ROOK;
 				castlingk = castlingq = 0;
 			}
 			if (move.info == Castlingq) {
-				byType[ALL_PIECES] ^= (square_bb(SQ_D8) & square_bb(SQ_A8));
-				byType[ROOK] ^= (square_bb(SQ_A8) & square_bb(SQ_D8));
-				byColor[BLACK] ^= (square_bb(SQ_D8) & square_bb(SQ_A8));
+				byType[ALL_PIECES] ^= (square_bb(SQ_D8) | square_bb(SQ_A8));
+				byType[ROOK] ^= (square_bb(SQ_A8) | square_bb(SQ_D8));
+				byColor[BLACK] ^= (square_bb(SQ_D8) | square_bb(SQ_A8));
 				board[SQ_A8] = NO_PIECE;
 				board[SQ_D8] = B_ROOK;
 				castlingk = castlingq = 0;
@@ -182,29 +198,32 @@ public:
 	}
 
 	inline bool is_attacked_square(Square s) {
-		if (AttackersPawn[!sideToMove][s] & byType[PAWN] & byColor[!sideToMove]) return 1;
-		if (PseudoAttacks[KNIGHT][s] & byType[KNIGHT] & byColor[!sideToMove]) return 1;
-		if (PseudoAttacks[KING][s] & byType[KING] & byColor[!sideToMove]) return 1;
-		Bitboard attacks = 0;
-		Bitboard bishops = (byType[BISHOP] | byType[QUEEN]) & byColor[!sideToMove];
-		while (bishops) {
-			Square sq = get_square(bishops);
-			attacks |= pseudolegal_bishop(byType[ALL_PIECES], sq);
-			bishops ^= square_bb(sq);
-		}
-		Bitboard rooks = (byType[ROOK] | byType[QUEEN]) & byColor[!sideToMove];
-		while (rooks) {
-			Square sq = get_square(rooks);
-			attacks |= pseudolegal_rook(byType[ALL_PIECES], sq);
-			rooks ^= square_bb(sq);
-		}
-		return attacks & square_bb(s);
+		return (AttackersPawn[!sideToMove][s] & byType[PAWN] & byColor[!sideToMove]) ||
+			(PseudoAttacks[KNIGHT][s] & byType[KNIGHT] & byColor[!sideToMove]) ||
+			(PseudoAttacks[KING][s] & byType[KING] & byColor[!sideToMove]) ||
+			(pseudolegal_bishop(byType[ALL_PIECES], s) & (byType[BISHOP] | byType[QUEEN]) & byColor[!sideToMove]) ||
+			(pseudolegal_rook(byType[ALL_PIECES], s) & (byType[ROOK] | byType[QUEEN]) & byColor[!sideToMove]);
 	}
 
 	inline bool is_legal(Move move) {
 		Bitboard BCNSTM = byColor[!sideToMove];
 		Bitboard BTAP = byType[ALL_PIECES];
-		byColor[!sideToMove] &= ~square_bb(move.to);
+		byColor[another_color(sideToMove)] &= ~square_bb(move.to);
+		byType[ALL_PIECES] &= ~square_bb(move.from);
+		byType[ALL_PIECES] |= square_bb(move.to);
+		bool ans = !is_attacked_square(type_of(board[move.from]) != KING ? get_square(byType[KING] & byColor[sideToMove]) : move.to);
+		byColor[!sideToMove] = BCNSTM;
+		byType[ALL_PIECES] = BTAP;
+		return ans;
+	}
+
+
+	inline bool is_legal_enPassant(Move move) {
+		Square target = sideToMove == BLACK ? shift_up(move.to) : shift_down(move.to);
+		Bitboard BCNSTM = byColor[!sideToMove];
+		Bitboard BTAP = byType[ALL_PIECES];
+		byColor[another_color(sideToMove)] &= ~square_bb(target);
+		byType[ALL_PIECES] &= ~square_bb(target);
 		byType[ALL_PIECES] &= ~square_bb(move.from);
 		byType[ALL_PIECES] |= square_bb(move.to);
 		bool ans = !is_attacked_square(type_of(board[move.from]) != KING ? get_square(byType[KING] & byColor[sideToMove]) : move.to);

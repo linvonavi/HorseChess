@@ -137,6 +137,7 @@
     <ClInclude Include="Movegen.h" />
     <ClInclude Include="Moves.h" />
     <ClInclude Include="Position.h" />
+    <ClInclude Include="test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

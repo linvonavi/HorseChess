@@ -135,11 +135,11 @@ Bitboard bishop_attacks(Square s, Bitboard blockers) {
 	return attacks;
 }
 
-Bitboard pseudolegal_rook(Bitboard board, Square s) {
+inline Bitboard pseudolegal_rook(Bitboard board, Square s) {
 	return MagicRook[s][((board & PseudoAttacks[ROOK][s]) * MagicRookNumbers[s]) >> MagicRookShift[s]];
 }
 
-Bitboard pseudolegal_bishop(Bitboard board, Square s) {
+inline Bitboard pseudolegal_bishop(Bitboard board, Square s) {
 	return MagicBishop[s][((board & PseudoAttacks[BISHOP][s]) * MagicBishopNumbers[s]) >> MagicBishopShift];
 }
 
