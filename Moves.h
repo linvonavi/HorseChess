@@ -25,15 +25,19 @@ inline Move string_to_move(string s) {
 	if (s.size() > 4) {
 		if (s[4] == 'q' || s[4] == 'Q') {
 			mov.info = QUEEN;
+			return mov;
 		}
 		if (s[4] == 'k' || s[4] == 'K') {
 			mov.info = KING;
+			return mov;
 		}
 		if (s[4] == 'b' || s[4] == 'B') {
 			mov.info = BISHOP;
+			return mov;
 		}
 		if (s[4] == 'n' || s[4] == 'N') {
 			mov.info = KNIGHT;
+			return mov;
 		}
 		mov.info = stoi(s.substr(4, s.size() - 4));
 	}
@@ -43,10 +47,28 @@ inline Move string_to_move(string s) {
 string move_to_string(Move move) {
 	string res = square_to_string(move.from) + square_to_string(move.to);
 	if (move.info) {
-		res += move.info;
+		if (move.info == KNIGHT) {
+			res += 'n';
+			return res;
+		}
+		if (move.info == BISHOP) {
+			res += 'b';
+			return res;
+		}
+		if (move.info == ROOK) {
+			res += 'r';
+			return res;
+		}
+		if (move.info == QUEEN) {
+			res += 'q';
+			return res;
+		}
+		res += to_string(move.info);
 	}
 	return res;
 }
+
+struct Position;
 
 struct MoveList {
 	Move moves[MAX_MOVES];
@@ -64,5 +86,14 @@ struct MoveList {
 		}
 		return false;
 	}
+
+	void sort(Position& Pos);
 };
 
+
+struct Temp {
+	MoveList Moves;
+	MoveList PriorityMoves[6][6];
+};
+
+Temp temp;

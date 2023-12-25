@@ -21,6 +21,8 @@ public:
 
 	short material_eval();
 
+	inline pair<char, char> move_eval(Move move);
+
 	void set(string fen) {
 		memset(board, 0, sizeof(board));
 		memset(byType, 0, sizeof(byType));
