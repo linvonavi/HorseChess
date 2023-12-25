@@ -23,17 +23,29 @@ struct Move {
 inline Move string_to_move(string s) {
 	Move mov(string_to_square(s.substr(0, 2)), string_to_square(s.substr(2, 2)));
 	if (s.size() > 4) {
+		if (s[4] == 'q' || s[4] == 'Q') {
+			mov.info = QUEEN;
+		}
+		if (s[4] == 'k' || s[4] == 'K') {
+			mov.info = KING;
+		}
+		if (s[4] == 'b' || s[4] == 'B') {
+			mov.info = BISHOP;
+		}
+		if (s[4] == 'n' || s[4] == 'N') {
+			mov.info = KNIGHT;
+		}
 		mov.info = stoi(s.substr(4, s.size() - 4));
 	}
 	return mov;
 }
 
-void print(Move move) {
-	cout << square_to_string(move.from) << square_to_string(move.to);
+string move_to_string(Move move) {
+	string res = square_to_string(move.from) + square_to_string(move.to);
 	if (move.info) {
-		cout << move.info;
+		res += move.info;
 	}
-	cout << ' ';
+	return res;
 }
 
 struct MoveList {

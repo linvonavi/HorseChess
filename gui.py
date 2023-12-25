@@ -2,7 +2,8 @@ import pygame
 import subprocess
 
 # Запускаем шахматный движок
-process = subprocess.Popen('C:\\Users\\ПК\\source\\repos\\HorseChess\\x64\\Release\\HorseChess.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+#process = subprocess.Popen('C:\\Users\\ПК\\source\\repos\\HorseChess\\x64\\Release\\HorseChess.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+process = subprocess.Popen('C:\\Users\\ПК\\source\\repos\\HorseChess\\HorseChess.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 #process.stdin.write(b'set_position\n')
 
 def get_moves():

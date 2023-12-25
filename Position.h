@@ -13,6 +13,14 @@ public:
 
 	Color sideToMove;
 
+	void legal_moves(MoveList& moves);
+
+	bool is_exist_legal_move();
+
+	short eval();
+
+	short material_eval();
+
 	void set(string fen) {
 		memset(board, 0, sizeof(board));
 		memset(byType, 0, sizeof(byType));
@@ -20,7 +28,13 @@ public:
 		castlingK = 0; castlingQ = 0; castlingk = 0; castlingq = 0;
 		stringstream ss(fen);
 		string piecePlacement, activeColor, castlingRights, enPassantTargetSquare, halfMoveClock, fullMoveNumber;
-		ss >> piecePlacement >> activeColor >> castlingRights >> enPassantTargetSquare >> halfMoveClock >> fullMoveNumber;
+		ss >> piecePlacement;
+		if (piecePlacement == "startpos") {
+			stringstream ss1(StartFEN);
+			ss1 >> piecePlacement >> activeColor >> castlingRights >> enPassantTargetSquare >> halfMoveClock >> fullMoveNumber;
+		} else {
+			ss >> activeColor >> castlingRights >> enPassantTargetSquare >> halfMoveClock >> fullMoveNumber;
+		}
 		Square pos = SQ_A8;
 		for (char c : piecePlacement) {
 			if (c == '/') {
@@ -57,6 +71,12 @@ public:
 			if (i == 'q') castlingq = 1;
 		}
 		enPassantTarget = enPassantTargetSquare == "-" ? 0 : square_bb(string_to_square(enPassantTargetSquare));
+		string move;
+		if (ss >> move) {
+			while (ss >> move) {
+				make_move(string_to_move(move));
+			}
+		}
 	}
 
 	string get_fen() {
@@ -231,7 +251,6 @@ public:
 		byType[ALL_PIECES] = BTAP;
 		return ans;
 	}
-
 };
 
 

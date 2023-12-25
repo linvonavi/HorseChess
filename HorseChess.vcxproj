@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitboards.h" />
+    <ClInclude Include="Eval.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="Movegen.h" />
     <ClInclude Include="Moves.h" />

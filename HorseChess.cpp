@@ -1,6 +1,7 @@
 ﻿
 #include "Movegen.h"
-#include "test.h"
+#include "Search.h"
+#include "Eval.h"
 
 
 int main() {
@@ -8,27 +9,46 @@ int main() {
 	Position pos;
 	pos.set(StartFEN);
 
+
 	string type;
 	while (cin >> type) {
+		if (type == "uci") {
+			cout << "id name HorseChess" << endl;
+			cout << "id author HorseChess" << endl;
+			cout << "uciok" << endl;
+		}
+		if (type == "isready") {
+			cout << "readyok" << endl;
+		}
+		if (type == "ucinewgame") {
+			pos.set(StartFEN);
+		}
+
+		if (type == "go") {
+			SearchConfig config;
+			string s;
+			getline(cin, s);
+			stringstream ss(s);
+			while (ss >> s) {
+				if (s == "movetime") {
+					ss >> config.Movetime;
+				}
+			}
+			string move = move_to_string(start_search(pos, config));
+			cout << "bestmove " << move << endl;
+		}
+
 		if (type == "debug") {
 			Debug = !Debug;
 		}
 		if (type == "go_perft") {
 			int depth;
 			cin >> depth;
-			test(pos, depth);
+			// TODO
 		}
-		if (type == "set_position") {
-			string fen = "";
-			string s;
-			for (int i = 0; i < 6; i++) {
-				cin >> s;
-				if (s == "start") {
-					fen = StartFEN;
-					break;
-				}
-				fen += s + " ";
-			}
+		if (type == "position") {
+			string fen;
+			getline(cin, fen);
 			pos.set(fen);
 			if (Debug) {
 				print(pos);
@@ -36,7 +56,7 @@ int main() {
 		}
 		if (type == "get_moves") {
 			MoveList moves;
-			legal_moves(pos, moves);
+			pos.legal_moves(moves);
 			cout << moves.size << ' ';
 			for (int i = 0; i < moves.size; i++) {
 				print(moves.moves[i]);
@@ -48,7 +68,7 @@ int main() {
 			cin >> square;
 			Square sq = string_to_square(square);
 			MoveList moves;
-			legal_moves(pos, moves);
+			pos.legal_moves(moves);
 			int sz = 0;
 			for (int i = 0; i < moves.size; i++) {
 				sz += (moves.moves[i].from == sq);
@@ -74,7 +94,6 @@ int main() {
 			cout << pos.get_fen() << endl;
 		}
 	}
-
 
 	return 0;
 }
