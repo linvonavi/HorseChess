@@ -21,7 +21,14 @@ public:
 
 	short material_eval();
 
-	inline pair<char, char> move_eval(Move move);
+	inline char move_eval(const Move& move) const;
+
+	bool operator==(const Position& pos) const {
+		for (Square s = SQ_A1; s < SQUARE_CNT; s = Square(int(s) + 1)) {
+			if (board[s] != pos.board[s]) return false;
+		}
+		return sideToMove == pos.sideToMove && castlingK == pos.castlingK && castlingQ == pos.castlingQ && castlingk == pos.castlingk && castlingq == pos.castlingq && enPassantTarget == pos.enPassantTarget;
+	}
 
 	void set(string fen) {
 		memset(board, 0, sizeof(board));
@@ -252,6 +259,22 @@ public:
 		byColor[!sideToMove] = BCNSTM;
 		byType[ALL_PIECES] = BTAP;
 		return ans;
+	}
+};
+
+struct PositionHash {
+	unsigned long long operator()(const Position& pos) const {
+		unsigned long long hash = 0;
+		for (Square s = SQ_A1; s < SQUARE_CNT; s = Square(int(s) + 1)) {
+			hash = hash * 17 + pos.board[s];
+		}
+		hash = hash * 2 + pos.sideToMove;
+		hash = hash * 2 + pos.castlingK;
+		hash = hash * 2 + pos.castlingQ;
+		hash = hash * 2 + pos.castlingk;
+		hash = hash * 2 + pos.castlingq;
+		hash = hash * 2 + pos.enPassantTarget;
+		return hash;
 	}
 };
 

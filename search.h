@@ -3,14 +3,14 @@
 #include "Movegen.h"
 
 struct SearchConfig {
-	int Movetime = 10000;
+	int Movetime = 5000;
 	int Depth;
 	int StartTime;
 	int VisitedNodes = 0;
 	MoveList Stack;
 };
 
-inline pair<char, char> Position::move_eval(Move move) {
+inline char Position::move_eval(const Move& move) const {
 	char res = 0, res1 = 0;
 	res += bool(byType[PAWN] & square_bb(move.to));
 	res += 2 * bool(byType[KNIGHT] & square_bb(move.to));
@@ -22,40 +22,58 @@ inline pair<char, char> Position::move_eval(Move move) {
 	res1 += 3 * bool(byType[BISHOP] & square_bb(move.from));
 	res1 += 4 * bool(byType[ROOK] & square_bb(move.from));
 	res1 += 5 * bool(byType[QUEEN] & square_bb(move.from));
-	return { res, -res1 };
+	res += move.info == PawnPromotionId;
+	return res * 6 + res1;
 }
 
-void MoveList::sort(Position& pos) {
-	memset(temp.PriorityMoves, 0, sizeof(temp.PriorityMoves));
+void MoveList::sort(const Position& pos) {
+	for (int i = 0; i < 36; i++) {
+		temp.PriorityMoves[i].size = 0;
+	}
 	for (int i = 0; i < size; i++) {
-		auto [r1, r2] = pos.move_eval(moves[i]);
-		temp.PriorityMoves[r1][r2].moves[temp.PriorityMoves[r1][r2].size++] = moves[i];
+		char eval = pos.move_eval(moves[i]);
+		temp.PriorityMoves[eval].add(moves[i]);
 	}
 	int i = 0;
-	for (int r1 = 5; r1 >= 0; r1--) {
-		for (int r2 = 5; r2 >= 0; r2--) {
-			for (int j = 0; j < temp.PriorityMoves[r1][r2].size; j++) {
-				moves[i++] = temp.PriorityMoves[r1][r2].moves[j];
-			}
+	for (int j = 35; j >= 0; j--) {
+		for (int k = 0; k < temp.PriorityMoves[j].size; k++) {
+			moves[i++] = temp.PriorityMoves[j].moves[k];
 		}
 	}
 }
 
+
+
 pair<Move, short> search(Position pos, SearchConfig& config, int depth = 0, short alpha = -10000, short beta = 10000) {
-	if (clock() - config.StartTime > config.Movetime) return make_pair(Move(), pos.eval());
 	config.VisitedNodes++;
-	if (depth == config.Depth) {
-		return make_pair(Move(), pos.eval());
+
+	if (clock() - config.StartTime > config.Movetime) return make_pair(Move(), pos.eval());
+	if (depth >= config.Depth) {
+		if (depth >= config.Depth + 5) return make_pair(Move(), pos.eval());
+		short best = pos.eval();
+		MoveList moves;
+		pos.legal_moves(moves);
+		Position pos1;
+		for (int i = 0; i < moves.size; i++) {
+			if (!pos.board[moves.moves[i].to]) continue;
+			memcpy(&pos1, &pos, sizeof(Position));
+			pos1.make_move(moves.moves[i]);
+			auto [next_move, score] = search(pos1, config, depth + 1, alpha, beta);
+			best = pos.sideToMove == WHITE ? max(best, score) : min(best, score);
+			if (pos.sideToMove == WHITE) {
+				if (best >= beta) break;
+				alpha = max(alpha, best);
+			} else {
+				if (best <= alpha) break;
+				beta = min(beta, best);
+			}
+		}
+		return make_pair(Move(), best);
 	}
 	MoveList moves;
 	pos.legal_moves(moves);
-	//sort moves
-	//moves.sort(pos);
-	for (int i = 1; i < moves.size; i++) {
-		if (pos.move_eval(moves.moves[i]) > pos.move_eval(moves.moves[0])) {
-			swap(moves.moves[0], moves.moves[i]);
-		}
-	}
+
+	moves.sort(pos);
 
 	short best = pos.sideToMove == WHITE ? -10000 : 10000;
 	Move best_move;
@@ -101,6 +119,7 @@ Move start_search(Position& pos, SearchConfig config) {
 			res = r.first;
 			score = r.second;
 			cout << "time " << clock() - config.StartTime << " depth " << config.Depth << " score cp " << score << " pv " << move_to_string(res) << endl;
+			if (score == 10000 || score == -10000) break;
 		}
 		config.Depth++;
 	}

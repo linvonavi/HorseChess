@@ -9,7 +9,6 @@ int main() {
 	Position pos;
 	pos.set(StartFEN);
 
-
 	string type;
 	while (cin >> type) {
 		if (type == "uci") {

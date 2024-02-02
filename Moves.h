@@ -63,7 +63,7 @@ string move_to_string(Move move) {
 			res += 'q';
 			return res;
 		}
-		res += to_string(move.info);
+		//res += to_string(move.info);
 	}
 	return res;
 }
@@ -87,13 +87,13 @@ struct MoveList {
 		return false;
 	}
 
-	void sort(Position& Pos);
+	void sort(const Position& pos);
 };
 
 
 struct Temp {
 	MoveList Moves;
-	MoveList PriorityMoves[6][6];
+	MoveList PriorityMoves[36];
 };
 
 Temp temp;
