@@ -69,10 +69,15 @@ string move_to_string(Move move) {
 }
 
 struct Position;
+struct SearchConfig;
 
 struct MoveList {
 	Move moves[MAX_MOVES];
 	size_t size = 0;
+
+	void Movelist() {
+		memset(moves, 0, sizeof(moves));
+	}
 
 	void add(Move move) {
 		moves[size++] = move;
@@ -87,7 +92,7 @@ struct MoveList {
 		return false;
 	}
 
-	void sort(const Position& pos);
+	void sort(const Position& pos, SearchConfig& config);
 };
 
 
