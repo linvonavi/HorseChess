@@ -1,6 +1,6 @@
 # HorseChess
 * set board:
-  ```setposition <fen>```
+  ```position <fen>``` or  ```position startpos```
 * get possible moves:
 ```get_moves```
 * get possible moves from position in algebraic notation:
