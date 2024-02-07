@@ -9,7 +9,7 @@ example: ```get_moves_from_position a2```
 * make move
 ```make_move <move>```
 example: ```make_move a2a4```
-* start search
+* start search:
 ```go``` or ```go movetime <ms>```
 * turn on/off debug
 ```debug```
