@@ -1,6 +1,6 @@
 # HorseChess
 * set board:
-  ```set_position <fen>```
+  ```setposition <fen>```
 * get possible moves:
 ```get_moves```
 * get possible moves from position in algebraic notation:
@@ -9,6 +9,8 @@ example: ```get_moves_from_position a2```
 * make move
 ```make_move <move>```
 example: ```make_move a2a4```
+* start search
+```go``` or ```go movetime <ms>```
 * turn on/off debug
 ```debug```
 example:
