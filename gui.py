@@ -5,6 +5,11 @@ import subprocess
 process = subprocess.Popen('C:\\Users\\ПК\\source\\repos\\HorseChess\\x64\\Release\\HorseChess.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 #process = subprocess.Popen('C:\\Users\\ПК\\source\\repos\\HorseChess\\HorseChess.exe', stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 #process.stdin.write(b'set_position\n')
+def get_eval():
+    process.stdin.write(b'eval\n' )
+    process.stdin.flush()
+    output = process.stdout.readline()
+    return output
 
 def get_moves():
     process.stdin.write(b'get_moves\n' )
@@ -70,6 +75,13 @@ sc = 0
 att = []
 fps = 10
 
+imgs = dict()
+
+for fig in "pbnrqkPBNRQK":
+    imgs[fig] = pygame.image.load("img/" + fig.lower() + ('b' if fig.islower() else 'w') + '.png');
+
+    imgs[fig] = pygame.transform.scale( imgs[fig], (100, 100))
+
 def draw():
     for row in range(8):
         for col in range(8):
@@ -86,9 +98,15 @@ def draw():
             text = font.render(to_alg(row, col), True, (0, 0, 0))
             window.blit(text, (col * 100 + 5, row * 100 + 85))
             if piece != '.':
-                font = pygame.font.Font(None, 72)
-                text = font.render(piece, True, (0, 0, 0) if piece.islower() else (255, 255, 255))
-                window.blit(text, (col * 100 + 15, row * 100 + 15))
+                window.blit(imgs[piece], (col * 100 , row * 100 ))
+                #font = pygame.font.Font(None, 72)
+                #text = font.render(piece, True, (0, 0, 0) if piece.islower() else (255, 255, 255))
+                #window.blit(text, (col * 100 + 15, row * 100 + 15))
+
+    font = pygame.font.Font(None, 15)
+    text = font.render(get_eval()[:-2], True, (0, 0, 0))
+    window.blit(text, (750, 5))
+
 
 clock = pygame.time.Clock()
 # Главный цикл игры
@@ -110,6 +128,9 @@ while running:
                 sc = col
                 att = get_possible_moves(sett)
             else:
+                if (to_alg(row, col) not in get_possible_moves(sett)):
+                    #continue
+                    pass
                 print("make_move", sett + to_alg(row, col))
                 make_move(sett + to_alg(row, col))
                 board[row][col] = board[sr][sc]

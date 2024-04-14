@@ -52,7 +52,7 @@ public:
 			} else if (isdigit(c)) {
 				pos = Square(int(pos) + c - '0');
 			} else {
-				Piece pc;
+				Piece pc = NO_PIECE;
 				if (c == 'p') pc = B_PAWN;
 				if (c == 'n') pc = B_KNIGHT;
 				if (c == 'b') pc = B_BISHOP;
@@ -83,7 +83,7 @@ public:
 		string move;
 		if (ss >> move) {
 			while (ss >> move) {
-				make_move(string_to_move(move));
+				make_move(string_to_move(board, enPassantTarget, move));
 			}
 		}
 	}

@@ -10,7 +10,7 @@ using namespace std;
 mt19937 rnd(0);
 mt19937_64 rnd64(0);
 
-bool Debug = false;
+bool Debug = 0;
 
 enum Piece : char {
 	NO_PIECE,
@@ -48,7 +48,7 @@ inline Color color_of(Piece pc) {
 	return Color(pc >> 3);
 }
 
-enum Square : int {
+enum Square : char {
 	SQ_A1, SQ_B1, SQ_C1, SQ_D1, SQ_E1, SQ_F1, SQ_G1, SQ_H1,
 	SQ_A2, SQ_B2, SQ_C2, SQ_D2, SQ_E2, SQ_F2, SQ_G2, SQ_H2,
 	SQ_A3, SQ_B3, SQ_C3, SQ_D3, SQ_E3, SQ_F3, SQ_G3, SQ_H3,
@@ -67,6 +67,15 @@ inline Square string_to_square(string s) {
 
 inline string square_to_string(Square s) {
 	return string(1, 'a' + int(s) % 8) + string(1, '1' + int(s) / 8);
+}
+
+
+inline Square row(Square s) {
+	return Square(int(s) / 8);
+}
+
+inline Square column(Square s) {
+	return Square(int(s) % 8);
 }
 
 using Bitboard = uint64_t;
@@ -93,3 +102,42 @@ inline void print(Bitboard bb) {
 inline Bitboard operator|(Square s1, Square s2) { return square_bb(s1) | square_bb(s2); }
 
 const string StartFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - - -";
+
+
+
+//class Position {
+//public:
+//	Piece board[SQUARE_CNT];
+//	Bitboard byType[TYPE_CNT];
+//	Bitboard byColor[COLOR_CNT];
+//	Bitboard enPassantTarget = 0;
+//	bool castlingK = 0, castlingQ = 0, castlingk = 0, castlingq = 0;
+//
+//	Color sideToMove;
+//
+//	void legal_moves(MoveList& moves);
+//
+//	bool is_exist_legal_move();
+//
+//	short eval();
+//
+//	short material_eval();
+//
+//	inline char move_eval(const Move& move) const;
+//
+//	bool operator==(const Position& pos) const;
+//
+//	void set(string fen);
+//
+//	string get_fen();
+//	
+//	void move_piece(Square from, Square to);
+//
+//	void make_move(Move move);
+//
+//	inline bool is_attacked_square(Square s);
+//
+//	inline bool is_legal(Move move);
+//
+//	inline bool is_legal_enPassant(Move move);
+//};

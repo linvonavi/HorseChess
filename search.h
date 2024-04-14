@@ -3,7 +3,7 @@
 #include "Movegen.h"
 
 struct SearchConfig {
-	int Movetime = 5000;
+	int Movetime = 2000;
 	int Depth;
 	int StartTime;
 	int VisitedNodes = 0;
@@ -50,7 +50,7 @@ pair<Move, short> search(Position pos, SearchConfig& config, int depth = 0, shor
 
 	if (clock() - config.StartTime > config.Movetime) return make_pair(Move(), pos.eval());
 
-	if (depth >= config.Depth + 5) return make_pair(Move(), pos.eval());
+	if (depth >= config.Depth + 0) return make_pair(Move(), pos.eval());
 
 	Position pos1;
 	MoveList moves;
@@ -150,6 +150,17 @@ pair<Move, short> first_search(Position& pos, SearchConfig& config) {
 	return make_pair(best_move, best);
 }
 
+void solve(Position pos, int depth, Move fm, SearchConfig config) {
+	cout << move_to_string(fm) << ' ';
+	pos.make_move(fm);
+	for (int d1 = 1; d1 < depth; d1++) {
+		config.Depth = depth - d1;
+		auto [mo, sc] = first_search(pos, config);
+		cout << move_to_string(mo) << ' ';
+		pos.make_move(mo);
+	}
+}
+
 Move start_search(Position& pos, SearchConfig config) {
 	config.StartTime = clock();
 	config.Depth = 1;
@@ -160,11 +171,13 @@ Move start_search(Position& pos, SearchConfig config) {
 		if (clock() - config.StartTime < config.Movetime) {
 			res = r.first;
 			score = r.second;
-			cout << "time " << clock() - config.StartTime << " depth " << config.Depth << " score cp " << score << " pv " << move_to_string(res) << endl;
+			cout << "info " << "depth " << config.Depth << " time " << clock() - config.StartTime << " nodes " << config.VisitedNodes << " pv ";
+			solve(pos, config.Depth, res, config);
+			cout << " score cp " << score << endl;
 			if (score == 10000 || score == -10000) break;
 		}
 		config.Depth++;
 	}
-	cout << config.VisitedNodes << endl;
+	//cout << "visited nodes " << config.VisitedNodes << endl;
 	return res;
 }

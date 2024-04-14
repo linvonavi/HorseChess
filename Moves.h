@@ -10,17 +10,18 @@ const int CastlingK = 20, CastlingQ = 21, Castlingk = 22, Castlingq = 23;
 
 struct Move {
 	Square from, to;
-	int info = 0;
+	char info = 0;
 	Move() : from(SQ_A1), to(SQ_A1) {}
 
-	Move(Square from, Square to, int info = 0) : from(from), to(to), info(info) {};
+	Move(Square from, Square to, char info = 0) : from(from), to(to), info(info) {};
 
 	operator bool() const {
 		return from != to;
 	}
 };
 
-inline Move string_to_move(string s) {
+
+inline Move string_to_move(Piece* board, Bitboard enPassantTarget, string s) {
 	Move mov(string_to_square(s.substr(0, 2)), string_to_square(s.substr(2, 2)));
 	if (s.size() > 4) {
 		if (s[4] == 'q' || s[4] == 'Q') {
@@ -39,7 +40,32 @@ inline Move string_to_move(string s) {
 			mov.info = KNIGHT;
 			return mov;
 		}
-		mov.info = stoi(s.substr(4, s.size() - 4));
+		
+		//mov.info = stoi(s.substr(4, s.size() - 4));
+	}
+	if (type_of(board[mov.from]) == KING) {
+		if (mov.to == SQ_G1) {
+			mov.info = CastlingK;
+		}
+		if (mov.to == SQ_C1) {
+			mov.info = CastlingQ;
+		}
+		if (mov.to == SQ_G8) {
+			mov.info = Castlingk;
+		}
+		if (mov.to == SQ_C8) {
+			mov.info = Castlingq;
+		}
+		return mov;
+	}
+	if (type_of(board[mov.from]) == PAWN && (
+		(mov.from >= SQ_A2 && mov.from <= SQ_H2 && mov.to >= SQ_A4) ||
+		(mov.from >= SQ_A7 && mov.from <= SQ_H7 && mov.to <= SQ_H5))) {
+		mov.info = PawnPromotionId;
+		return mov;
+	}
+	if (type_of(board[mov.from]) == PAWN && column(mov.from) != column(mov.to) && board[mov.to] == NO_PIECE) {
+		mov.info = EnPassantId;
 	}
 	return mov;
 }

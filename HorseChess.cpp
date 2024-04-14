@@ -5,9 +5,11 @@
 
 
 int main() {
+	init_tables();
 	init_bitboards();
 	Position pos;
 	pos.set(StartFEN);
+	
 
 	string type;
 	while (cin >> type) {
@@ -21,6 +23,9 @@ int main() {
 		}
 		if (type == "ucinewgame") {
 			pos.set(StartFEN);
+		}
+		if (type == "eval") {
+			cout << pos.eval() << endl;
 		}
 
 		if (type == "go") {
@@ -58,7 +63,7 @@ int main() {
 			pos.legal_moves(moves);
 			cout << moves.size << ' ';
 			for (int i = 0; i < moves.size; i++) {
-				print(moves.moves[i]);
+				cout << move_to_string(moves.moves[i]) << ' ';
 			}
 			cout << endl;
 		}
@@ -75,7 +80,7 @@ int main() {
 			cout << sz << ' ';
 			for (int i = 0; i < moves.size; i++) {
 				if (moves.moves[i].from == sq) {
-					print(moves.moves[i]);
+					cout << move_to_string(moves.moves[i]) << ' ';
 				}
 			}
 			cout << endl;
@@ -83,11 +88,13 @@ int main() {
 		if (type == "make_move") {
 			string move;
 			cin >> move;
-			Move m = string_to_move(move);
+			Move m = string_to_move(pos.board, pos.enPassantTarget, move);
 			pos.make_move(m);
 			if (Debug) {
 				print(pos);
+				cout << pos.eval() << endl;
 			}
+
 		}
 		if (type == "get_fen") {
 			cout << pos.get_fen() << endl;
