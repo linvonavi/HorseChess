@@ -44,16 +44,16 @@ inline Move string_to_move(Piece* board, Bitboard enPassantTarget, string s) {
 		//mov.info = stoi(s.substr(4, s.size() - 4));
 	}
 	if (type_of(board[mov.from]) == KING) {
-		if (mov.to == SQ_G1) {
+		if (mov.to == SQ_G1 && mov.from == SQ_E1) {
 			mov.info = CastlingK;
 		}
-		if (mov.to == SQ_C1) {
+		if (mov.to == SQ_C1 && mov.from == SQ_E1) {
 			mov.info = CastlingQ;
 		}
-		if (mov.to == SQ_G8) {
+		if (mov.to == SQ_G8 && mov.from == SQ_E8) {
 			mov.info = Castlingk;
 		}
-		if (mov.to == SQ_C8) {
+		if (mov.to == SQ_C8 && mov.from == SQ_E8) {
 			mov.info = Castlingq;
 		}
 		return mov;
@@ -66,6 +66,9 @@ inline Move string_to_move(Piece* board, Bitboard enPassantTarget, string s) {
 	}
 	if (type_of(board[mov.from]) == PAWN && column(mov.from) != column(mov.to) && board[mov.to] == NO_PIECE) {
 		mov.info = EnPassantId;
+	}
+	if (type_of(board[mov.from]) == PAWN && (mov.to <= SQ_H1 || mov.to >= SQ_A8)) {
+		mov.info = QUEEN;
 	}
 	return mov;
 }

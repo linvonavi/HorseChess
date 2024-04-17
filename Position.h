@@ -171,7 +171,6 @@ public:
 		}
 		move_piece(move.from, move.to);
 		enPassantTarget = 0;
-		sideToMove = sideToMove == WHITE ? BLACK : WHITE;
 		if (move.info) {
 			if (move.info == PawnPromotionId) {
 				enPassantTarget = square_bb(sideToMove == WHITE ? shift_up(move.to) : shift_down(move.to));
@@ -185,9 +184,9 @@ public:
 				board[opp_sq] = NO_PIECE;
 				return;
 			}
-			if (move.info < PIECE_CNT) {
+			if (move.info < TYPE_CNT) {
 				byType[type_of(board[move.to])] ^= square_bb(move.to);
-				board[move.to] = Piece(move.info);
+				board[move.to] = make_piece(Type(move.info), sideToMove);
 				byType[type_of(board[move.to])] ^= square_bb(move.to);
 				return;
 			}
@@ -224,6 +223,7 @@ public:
 				castlingk = castlingq = 0;
 			}
 		}
+		sideToMove = sideToMove == WHITE ? BLACK : WHITE;
 	}
 
 	inline bool is_attacked_square(Square s) {
@@ -284,5 +284,4 @@ void print(Position pos) {
 		cout << PieceNames[pos.board[s]] << ' ';
 		if (s % 8 == 7) cout << '\n';
 	}
-	cout << '\n';
 }

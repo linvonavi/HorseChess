@@ -50,7 +50,7 @@ pair<Move, short> search(Position pos, SearchConfig& config, int depth = 0, shor
 
 	if (clock() - config.StartTime > config.Movetime) return make_pair(Move(), pos.eval());
 
-	if (depth >= config.Depth + 0) return make_pair(Move(), pos.eval());
+	if (depth >= config.Depth + 5) return make_pair(Move(), pos.eval());
 
 	Position pos1;
 	MoveList moves;
@@ -98,54 +98,95 @@ pair<Move, short> search(Position pos, SearchConfig& config, int depth = 0, shor
 	return make_pair(best_move, best);
 }
 
+template<typename R>
+bool is_ready(future<R> const& f) {
+	return f.wait_for(chrono::seconds(0)) == future_status::ready;
+}
+
+
 pair<Move, short> first_search(Position& pos, SearchConfig& config) {
-	int count_threads = std::thread::hardware_concurrency();
+	int count_threads = thread::hardware_concurrency();
 	short alpha = -10000, beta = 10000;
 	short best = pos.sideToMove == WHITE ? -10000 : 10000;
 	Move best_move;
 	MoveList moves;
 	pos.legal_moves(moves);
 	moves.sort(pos, config);
-	for (int i = 0; i < moves.size; i+= count_threads) {
-		vector<pair<Move, future<pair<SearchConfig, pair<Move, short>>>>> fut;
-		bool finished = 0;
-		for (int i1 = i; i1 < min(int(moves.size), i + count_threads); i1++) {
-			Position pos1;
-			pos1 = pos;
-			pos1.make_move(moves.moves[i1]);
-			config.Stack.moves[0] = moves.moves[i1];
-			
-			fut.emplace_back(moves.moves[i1], async([=] { 
-				auto config_copy = config;
-				config_copy.VisitedNodes = 0;
-				return make_pair( config_copy, search(pos1, config_copy, 1, alpha, beta) );
-				}));
-		}
-		for (auto& [first_move, i] : fut) {
-			auto [config1, res] = i.get();
-			auto [move, score] = res;
-			config.VisitedNodes += config1.VisitedNodes;
-			if (pos.sideToMove == WHITE) {
-				if (score > best) {
-					best = score;
-					best_move = first_move;
+	vector<pair<Move, future<pair<SearchConfig, pair<Move, short>>>>> fut;
+	int cnt = 0;
+	bool finished = 0;
+	while (cnt < moves.size) {
+		while (fut.size() >= count_threads) {
+			int it = 0;
+			for (auto& [first_move, i] : fut) {
+				if (is_ready(i)) {
+					auto [config1, res] = i.get();
+					auto [move, score] = res;
+					config.VisitedNodes += config1.VisitedNodes;
+					if (pos.sideToMove == WHITE) {
+						if (score > best) {
+							best = score;
+							best_move = first_move;
+						}
+					} else {
+						if (score < best) {
+							best = score;
+							best_move = first_move;
+						}
+					}
+					if (pos.sideToMove == WHITE) {
+						if (best >= beta) finished = 1;
+						alpha = max(alpha, best);
+					} else {
+						if (best <= alpha) finished = 1;
+						beta = min(beta, best);
+					}
+					fut.erase(fut.begin() + it);
+					break;
 				}
-			} else {
-				if (score < best) {
-					best = score;
-					best_move = first_move;
-				}
+				it++;
 			}
-			if (pos.sideToMove == WHITE) {
-				if (best >= beta) finished = 1;
-				alpha = max(alpha, best);
-			} else {
-				if (best <= alpha) finished = 1;
-				beta = min(beta, best);
+			if (config.Depth > 5) {
+				this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
 		}
 		if (finished) break;
-		
+
+		Position pos1;
+		pos1 = pos;
+		pos1.make_move(moves.moves[cnt]);
+		config.Stack.moves[0] = moves.moves[cnt];
+
+		fut.emplace_back(moves.moves[cnt], async([=] {
+			auto config_copy = config;
+			config_copy.VisitedNodes = 0;
+			return make_pair(config_copy, search(pos1, config_copy, 1, alpha, beta));
+			}));
+
+		cnt++;
+	}
+	for (auto& [first_move, i] : fut) {
+		auto [config1, res] = i.get();
+		auto [move, score] = res;
+		config.VisitedNodes += config1.VisitedNodes;
+		if (pos.sideToMove == WHITE) {
+			if (score > best) {
+				best = score;
+				best_move = first_move;
+			}
+		} else {
+			if (score < best) {
+				best = score;
+				best_move = first_move;
+			}
+		}
+		if (pos.sideToMove == WHITE) {
+			if (best >= beta) finished = 1;
+			alpha = max(alpha, best);
+		} else {
+			if (best <= alpha) finished = 1;
+			beta = min(beta, best);
+		}
 	}
 	return make_pair(best_move, best);
 }

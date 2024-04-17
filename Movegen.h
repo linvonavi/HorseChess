@@ -18,10 +18,10 @@ void Position::legal_moves(MoveList& moves) {
 			if (is_legal(Move(from, to_sq))) {
 				// promotion
 				if (square_bb(to_sq) & PawnPromotionMask[sideToMove]) {
-					moves.add(Move(from, to_sq, make_piece(QUEEN, sideToMove)));
-					moves.add(Move(from, to_sq, make_piece(ROOK, sideToMove)));
-					moves.add(Move(from, to_sq, make_piece(BISHOP, sideToMove)));
-					moves.add(Move(from, to_sq, make_piece(KNIGHT, sideToMove)));
+					moves.add(Move(from, to_sq, QUEEN));
+					moves.add(Move(from, to_sq, ROOK));
+					moves.add(Move(from, to_sq, BISHOP));
+					moves.add(Move(from, to_sq, KNIGHT));
 				} else {
 					moves.add(Move(from, to_sq));
 				}

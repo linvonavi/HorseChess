@@ -58,6 +58,9 @@ int main() {
 				print(pos);
 			}
 		}
+		if (type == "board") {
+			print(pos);
+		}
 		if (type == "get_moves") {
 			MoveList moves;
 			pos.legal_moves(moves);

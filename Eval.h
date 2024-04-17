@@ -181,6 +181,7 @@ void init_tables() {
     }
 }
 
+
 short Position::material_eval() {
     short mg[2];
     short eg[2];

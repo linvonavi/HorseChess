@@ -94,7 +94,6 @@ inline void print(Bitboard bb) {
 		cout << ((bb >> s) & 1) << ' ';
 		if (s % 8 == 7) cout << '\n';
 	}
-	cout << '\n';
 }
 
 

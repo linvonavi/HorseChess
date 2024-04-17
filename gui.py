@@ -44,10 +44,10 @@ def best_move():
     process.stdin.write(b'go\n')
     process.stdin.flush()
     output = process.stdout.readline()
-    print(output)
+    print(output.decode())
     while output.decode().split(" ")[0] != "bestmove":
         output = process.stdout.readline()
-        print(output)
+        print(output.decode())
     return output.decode().split(" ")[1][:-2]
 
 
@@ -59,6 +59,7 @@ window = pygame.display.set_mode((800, 800))
 # Определяем цвета клеток
 light_square = (240, 218, 181)
 dark_square = (181, 135, 99)
+light_gray = (50, 200, 10)
 
 # Определяем шахматную доску
 board = [["r", "n", "b", "q", "k", "b", "n", "r",],
@@ -69,10 +70,21 @@ board = [["r", "n", "b", "q", "k", "b", "n", "r",],
          [".", ".", ".", ".", ".", ".", ".", ".",],
          ["P", "P", "P", "P", "P", "P", "P", "P",],
          ["R", "N", "B", "Q", "K", "B", "N", "R"]]
+
+def upd_board():
+    process.stdin.write(b'board\n')
+    process.stdin.write(b'\n')
+    process.stdin.flush()
+    for i in range(8):
+        output = process.stdout.readline().decode().split(" ")
+        for j in range(8):
+            board[i][j] = output[j]
+
 sett = ""
 sr=0
 sc = 0
 att = []
+last = []
 fps = 10
 
 imgs = dict()
@@ -83,9 +95,12 @@ for fig in "pbnrqkPBNRQK":
     imgs[fig] = pygame.transform.scale( imgs[fig], (100, 100))
 
 def draw():
+    upd_board()
     for row in range(8):
         for col in range(8):
             color = light_square if (row + col) % 2 == 0 else dark_square
+            if ((row, col) in last) :
+                color = light_gray
             if to_alg(row, col) in att:
                 color = "green"
             if to_alg(row, col) == sett:
@@ -129,12 +144,13 @@ while running:
                 att = get_possible_moves(sett)
             else:
                 if (to_alg(row, col) not in get_possible_moves(sett)):
-                    #continue
-                    pass
+                    continue
+                    #pass
                 print("make_move", sett + to_alg(row, col))
                 make_move(sett + to_alg(row, col))
                 board[row][col] = board[sr][sc]
                 board[sr][sc] = '.'
+                last = [(row, col), (sr, sc)]
                 sett = ""
                 att = []
                 draw()
@@ -144,6 +160,7 @@ while running:
                 make_move(move_opp)
                 board[ord('8') - ord(move_opp[3])][ord(move_opp[2]) - ord('a')] = board[ord('8') - ord(move_opp[1])][ord(move_opp[0]) - ord('a')]
                 board[ord('8') - ord(move_opp[1])][ord(move_opp[0]) - ord('a')] = '.'
+                last = [(ord('8') - ord(move_opp[3]), ord(move_opp[2]) - ord('a')), (ord('8') - ord(move_opp[1]), ord(move_opp[0]) - ord('a'))]
 
     # Рисуем шахматную доску
     draw()
